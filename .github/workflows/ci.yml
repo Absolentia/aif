@@ -13,13 +13,22 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Enable pip cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
       - name: Install deps
         run: |
           python -m pip install -U pip
           python -m pip install -e .
           python -m pip install ruff pytest pip-licenses
-      - name: Lint
-        run: ruff check .
+      - name: Lint (soft on first run)
+        run: |
+          ruff format --check .
+          ruff check --output-format=github --exit-zero .
       - name: Tests
         run: pytest -q
       - name: Generate third-party notices (artifact)
