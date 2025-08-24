@@ -17,14 +17,45 @@ Coding standards
 Local dev
 
 ```bash
-python -m venv .venv && source .venv/bin/activate  # или uv
-pip install -U pip
-pip install -e .
-pip install ruff pytest pip-licenses
+pip install --upgrade pip
+pip install uv
 
-ruff check .
-pytest -q
+uv venv
+source .venv/bin/activate
+
+# Install project deps + dev tools (ruff/pytest) defined in pyproject.toml
+uv sync
+
+# Run tools via uv-run so the right env is used
+uv run ruff check .
+uv run pytest -q
 ```
+
+Autofix (write changes)
+
+- Formatter (applies code style like quotes, spacing; writes files):
+  ```bash
+  # Use auto-discovered ruff.toml (recommended)
+  uv run ruff format .
+
+  # Or explicitly specify config
+  uv run ruff format . --config ruff.toml
+  ```
+
+- Linter autofixes (safe fixes only):
+  ```bash
+  # Apply autofixes for lint rules
+  uv run ruff check --fix .
+
+  # Show what would change (no writes)
+  uv run ruff check --diff .
+  ```
+
+- Check-only with diff (no writes), matching your earlier command:
+  ```bash
+  uv run ruff format --check --diff .
+  ```
+  Note: If you pass --config pyproject.toml, ruff will ignore ruff.toml. Prefer omitting --config (auto-discovery) or use --config ruff.toml to apply this repo’s formatting rules.
 
 CI & packaging
 - GitHub Actions: lint/tests + build.

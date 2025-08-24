@@ -35,4 +35,4 @@ dev = ["ruff", "pytest", "pip-licenses"]
 aif = "aif.cli:app"
 
 [tool.uv]
-# при желании: uv sync / uv run
+dev-dependencies = ["ruff", "pytest", "pip-licenses"]
